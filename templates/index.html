@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Insights and Recommendations</title>
+    <style>
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    background-color: #1c242e;
+    color: white;
+}
+
+header img {
+    height: 50px; /* Adjust the logo size */
+}
+
+h1, h2 {
+    margin: 0;
+}
+
+h2 {
+    padding: 5px;
+    color: #1c242e;
+}
+
+textarea {
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.button-container {
+    display: flex;
+    justify-content: space-between; /* Space between buttons */
+    margin-top: 10px;
+}
+
+button {
+    padding: 10px 15px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    flex: 1; /* Buttons occupy equal space */
+    margin: 0 5px; /* Adds space between buttons */
+}
+
+button:hover {
+    background-color: #218838;
+}
+
+.result, .insights {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+/* Recommendations Section */
+.recommendation {
+    margin: 10px 0;
+    padding: 10px;
+    border: 1px solid #28a745;
+    border-radius: 5px;
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.recommendation p {
+    margin: 5px 0;
+}
+
+/* Insights Section */
+.insights ul {
+    list-style-type: disc;
+    padding-left: 20px;
+}
+
+.insights li {
+    padding: 5px 0;
+    color: #555;
+    font-size: 16px;
+}
+
+.insights li:hover {
+    color: #000;
+    font-weight: bold;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 10px 100px;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Flexbox to display recommendations and insights side by side */
+.side-by-side {
+    display: flex;
+    justify-content: space-between; /* Distribute space between both sections */
+    gap: 20px;
+}
+
+.result, .insights {
+    flex: 1; /* Make both sections take equal space */
+}
+
+
+    </style>
+    <script>
+        // Retain textarea data on submission
+        window.onload = function() {
+            const textarea = document.getElementById('customer_data');
+            const storedData = localStorage.getItem('customerData');
+            if (storedData) {
+                textarea.value = storedData;
+            }
+
+            textarea.addEventListener('input', function() {
+                localStorage.setItem('customerData', textarea.value);
+            });
+        };
+    </script>
+</head>
+<body>
+    <header>
+        <img src="https://avatars.githubusercontent.com/u/43522559?v=4" alt="Logo"> <!-- Replace with your logo source -->
+        <h1>Hyper-Personalisation with GenAI</h1>
+    </header>
+
+    <div class="container">
+        <form method="POST" onsubmit="return retainData();">
+            <h2>Enter Your Data Here in JSON Format: </h2>
+
+            <textarea id="customer_data" name="customer_data" rows="10" cols="30" placeholder='{"name": "John Doe", "age": 30, ...}' required></textarea>
+            
+            <div class="button-container">
+                <div>
+                    <button type="submit" name="generate_recommendation">Generate Recommendation</button>
+                </div>
+                <div>
+                    <button type="submit" name="generate_insights">Generate Insights</button>
+                </div>
+            </div>
+        </form>
+
+        <div class="side-by-side">
+            {% if recommendation %}
+            <div class="result">
+                <h2>Perosnlised Product Recommendations</h2>
+                <div class="recommendation">
+                    {% for line in recommendation.split('\n') %}
+                    <p>{{ line }}</p>
+                    {% endfor %}
+                </div>
+                <h3>Customer Segment: {{ customer_segment }}
+                <span>
+                {% if customer_segment == 0 %}
+                    (Affluent)
+                {% elif customer_segment == 1 %}
+                    (Cautious)
+                {% elif customer_segment == 2 %}
+                    (Moderate)
+                {% else %}
+                    Undefined
+                {% endif %}
+                </span></h3>
+                <h3>All Product Probabilities:</h3>
+                <ul>
+                    {% for product, probability in product_probabilities.items() %}
+                    <li>{{ product }}: {{ probability }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+    
+            {% if insights %}
+            <div class="insights">
+                <h2>Perosnlised Insights</h2>
+                <ul>
+                    {% for item in insights %}
+                    <li>{{ item }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
